@@ -120,7 +120,7 @@ public class RoyaleArena implements IArena {
     @Override
     public Iterable<Battlecard> getByNameOrderedBySwagDescending(String name) {
 
-        List<Battlecard> cardsWithName = GetBattleCardsWithSpecificName(name);
+        List<Battlecard> cardsWithName = getBattleCardsWithSpecificName(name);
 
         return getBattleCardsBySwagDescAndIdAsc(cardsWithName.stream());
 
@@ -129,8 +129,13 @@ public class RoyaleArena implements IArena {
     @Override
     public Iterable<Battlecard> getByNameAndSwagRange(String name, double lo, double hi) {
 
-        List<Battlecard> cardsWithName = GetBattleCardsWithSpecificName(name);
+        List<Battlecard> cardsWithName = getBattleCardsWithSpecificName(name);
+
         List<Battlecard> battleCardStream = cardsWithName.stream().filter(c -> c.getSwag() >= lo && c.getSwag() < hi).collect(Collectors.toList());
+
+        if(battleCardStream.isEmpty()){
+            throw new UnsupportedOperationException();
+        }
 
         return getBattleCardsBySwagDescAndIdAsc(battleCardStream.stream());
     }
@@ -164,7 +169,7 @@ public class RoyaleArena implements IArena {
 
             }
             return comparison;
-        }).collect(Collectors.toList());
+        }).limit(n).collect(Collectors.toList());
 
     }
 
@@ -210,7 +215,7 @@ public class RoyaleArena implements IArena {
     }
 
 
-    private List<Battlecard> GetBattleCardsWithSpecificName(String name) {
+    private List<Battlecard> getBattleCardsWithSpecificName(String name) {
         List<Battlecard> cardsWithName = new ArrayList<>();
         for (Battlecard card : this.battleCards.values()) {
             if (card.getName().equals(name)) {
